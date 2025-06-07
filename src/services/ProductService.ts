@@ -1,4 +1,4 @@
-import { safeParse, coerce, number, parse } from "valibot";
+import { safeParse, number, parse, pipe, transform, unknown } from "valibot";
 import axios from "axios";
 import { DrafProductSchema, ProductSchema, ProductsSchema } from "../types";
 import type { Product } from "../types";
@@ -61,7 +61,11 @@ export async function getProductById(id: Product['id']) {
 
 export async function updateProduct(data: ProductData, id: Product['id']) {
     try {
-        const NumberSchema = coerce(number(), Number)
+        const NumberSchema =pipe(
+  unknown(), // <-- primer esquema base
+  transform((value: unknown) => Number(value)),
+  number()
+);
         const result = safeParse(ProductSchema,
             {
                 id,
